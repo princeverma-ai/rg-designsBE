@@ -27,6 +27,11 @@ const transactionSchema = new mongoose.Schema({
     default: new Date(),
   },
   // Optional fields
+  customOrder: {
+    type: Schema.Types.ObjectId,
+    ref: "CustomOrder",
+    default: null,
+  },
   paypalId: {
     type: String,
     default: null,
