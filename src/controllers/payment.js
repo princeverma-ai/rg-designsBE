@@ -19,7 +19,7 @@ const checkout = async (req, res) => {
       amount: req.body.totalAmount,
       paypalId: req.body.paypalId,
       customOrder: req.body.customOrder || null,
-      isPaid: true,
+      isPaid: req.body.isPaid,
     });
     const templatePath = path.join(__dirname, "..", "templates", "index.html");
     const template = fs.readFileSync(templatePath, "utf-8");
