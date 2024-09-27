@@ -4,7 +4,7 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT),
-  secure: false, // true for 465, false for other ports
+  secure: process.env.SMTP_SECURE === "true" || false,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -14,6 +14,10 @@ const transporter = nodemailer.createTransport({
 // Define a function to send an email
 const sendEmail = async (mailOptions) => {
   try {
+    if (process.env.SEND_EMAIL === "false") {
+      console.log("Email not sent because SEND_EMAIL is set to false");
+      return;
+    }
     const info = await transporter.sendMail(mailOptions);
     return info;
   } catch (error) {

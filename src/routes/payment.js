@@ -1,11 +1,11 @@
 import express from "express";
-import { checkoutSession, webhook } from "../controllers/payment.js";
+import paypalCheckout from "../controllers/paypal.js";
 import { protect } from "../controllers/user.js";
 
 const paymentRouter = express.Router();
 
 // Payment routes
-paymentRouter.route("/checkout-session").post(protect, checkoutSession);
-paymentRouter.route("/webhook").post(webhook);
+paymentRouter.route("/checkout-session").post(protect, paypalCheckout);
+// paymentRouter.route("/webhook").post(webhook);
 
 export default paymentRouter;
