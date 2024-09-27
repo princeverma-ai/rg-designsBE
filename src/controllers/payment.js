@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import Transaction from "../models/transaction.js";
+import CustomOrder from "../models/customOrder.js";
 
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
@@ -21,6 +22,9 @@ const checkout = async (req, res) => {
       customOrder: req.body.customOrder || null,
       isPaid: req.body.isPaid,
     });
+    if (req.body.customOrder && req.body.isPaid) {
+      await CustomOrder.findByIdAndUpdate(req.body.customOrder, { isPaid: true });
+    }
     const templatePath = path.join(__dirname, "..", "templates", "index.html");
     const template = fs.readFileSync(templatePath, "utf-8");
     const emailData = {
