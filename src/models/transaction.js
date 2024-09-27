@@ -20,11 +20,16 @@ const transactionSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+
   date: {
     type: Date,
     default: new Date(),
   },
   // Optional fields
+  paypalId: {
+    type: String,
+    default: null,
+  },
   couponDiscount: {
     type: Number,
     default: null,

@@ -4,6 +4,8 @@ import ejs from "ejs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import Transaction from "../models/transaction.js";
+
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +33,12 @@ const createOrder = async (req, res) => {
 
   try {
     const order = await client.execute(request);
+    await Transaction.create({
+      lineItems: req.body.products,
+      user: req.body.userId,
+      amount: req.body.totalAmount,
+      paypalId: order.result.id,
+    });
     res.status(200).json({
       id: order.result.id,
     });
@@ -46,6 +54,7 @@ const capturePayment = async (req, res) => {
 
   try {
     const capture = await client.execute(request);
+    await Transaction.findOneAndUpdate({ paypalId: orderID }, { isPaid: true });
     res.status(200).json({
       status: capture.result.status,
     });
@@ -61,7 +70,7 @@ const sendOrderConfirmationEmail = async (req, res) => {
     const emailData = {
       customerName: req.body.customerName,
       products: req.body.products,
-      totalAmount: 89.97,
+      totalAmount: req.body.totalAmount,
       zipLinks: req.body.zipLinks,
     };
     // Render the template with the data
