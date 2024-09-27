@@ -44,7 +44,12 @@
         <% }); %>
       </table>
       <p><strong>Total Amount: $<%= totalAmount.toFixed(2) %></strong></p>
-      <p>Product Link: <a href="<%= productLink %>"><%= productLink %></a></p>
+      <p>Zip File Links:</p>
+      <ul>
+        <% zipLinks.forEach(function(link, index) { %>
+        <li><a href="<%= link %>">Download Zip File <%= index + 1 %></a></li>
+        <% }); %>
+      </ul>
 
       <p>Thanks & Regards</p>
       <p>Raje</p>

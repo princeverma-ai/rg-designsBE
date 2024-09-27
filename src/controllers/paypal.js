@@ -1,5 +1,5 @@
 import querystring from "querystring";
-import fetch from "node-fetch"; // Import fetch for Node.js (works in Node.js 18+ natively)
+import fetch from "node-fetch";
 import sendEmail from "../utils/email.js";
 import fs from "fs";
 import ejs from "ejs";
@@ -61,14 +61,10 @@ const paypalCheckout = async (req, res) => {
       const templatePath = path.join(__dirname, "..", "templates", "index.html");
       const template = fs.readFileSync(templatePath, "utf-8");
       const emailData = {
-        customerName: "John Doe",
-        products: [
-          { name: "Product 1", price: 19.99 },
-          { name: "Product 2", price: 29.99 },
-          { name: "Product 3", price: 39.99 },
-        ],
+        customerName: req.body.customerName,
+        products: req.body.products,
         totalAmount: 89.97,
-        productLink: "https://example.com/products",
+        zipLinks: req.body.zipLinks,
       };
       // Render the template with the data
       const html = ejs.render(template, emailData);
