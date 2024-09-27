@@ -9,6 +9,7 @@ const transactionSchema = new mongoose.Schema({
         ref: "Product",
       },
       amount: Number,
+      name: String,
     },
   ],
   user: {
