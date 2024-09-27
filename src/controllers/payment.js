@@ -14,7 +14,11 @@ const __dirname = path.dirname(__filename);
 const checkout = async (req, res) => {
   try {
     const transation = await Transaction.create({
-      ...req.body,
+      lineItems: req.body.products,
+      user: req.body.userId,
+      amount: req.body.totalAmount,
+      paypalId: req.body.paypalId,
+      customOrder: req.body.customOrder || null,
       isPaid: true,
     });
     const templatePath = path.join(__dirname, "..", "templates", "index.html");
