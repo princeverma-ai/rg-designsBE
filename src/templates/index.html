@@ -39,7 +39,7 @@
         <% products.forEach(function(product) { %>
         <tr>
           <td><%= product.name %></td>
-          <td>$<%= product.price.toFixed(2) %></td>
+          <td>$<%= product.price?.toFixed(2) %></td>
         </tr>
         <% }); %>
       </table>

@@ -40,6 +40,7 @@ const checkout = async (req, res) => {
     await sendEmail(mailOptions);
     res.status(200).json(transation);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
