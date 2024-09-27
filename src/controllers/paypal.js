@@ -1,5 +1,3 @@
-import querystring from "querystring";
-import fetch from "node-fetch";
 import sendEmail from "../utils/email.js";
 import fs from "fs";
 import ejs from "ejs";
@@ -9,78 +7,76 @@ import { fileURLToPath } from "url";
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const paypalCheckout = async (req, res) => {
-  const { amount, email } = req.body;
 
-  const api_username = "rgembroiderydesigns_api1.gmail.com";
-  const api_password = "3T45GNK64PDA2HRU";
-  const api_signature = "AYKbYbGCvOInUYMA-XnVG0kukgglA607QURtSQ4MLMEpAOmbn2YPAN-H";
-  const version = "124.0";
+// paypalController.js
+import client from "../utils/paypal.js";
+import paypal from "@paypal/checkout-server-sdk";
 
-  // PayPal NVP API parameters for setting up express checkout
-  const params = {
-    USER: api_username,
-    PWD: api_password,
-    SIGNATURE: api_signature,
-    VERSION: version,
-    METHOD: "SetExpressCheckout",
-    PAYMENTREQUEST_0_AMT: amount,
-    PAYMENTREQUEST_0_CURRENCYCODE: "USD",
-    PAYMENTREQUEST_0_PAYMENTACTION: "Sale",
-    RETURNURL: "https://your-site.com/success",
-    CANCELURL: "https://your-site.com/cancel",
-  };
+// Create PayPal Order
+const createOrder = async (req, res) => {
+  const request = new paypal.orders.OrdersCreateRequest();
+  request.headers["Content-Type"] = "application/json";
 
-  const apiEndpoint = "https://api-3t.sandbox.paypal.com/nvp";
+  request.requestBody({
+    intent: "CAPTURE",
+    purchase_units: [
+      {
+        amount: {
+          currency_code: "USD",
+          value: req.body.totalAmount,
+        },
+      },
+    ],
+  });
 
   try {
-    // Make POST request to PayPal API
-    const response = await fetch(apiEndpoint, {
-      method: "POST",
-      body: querystring.stringify(params),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+    const order = await client.execute(request);
+    res.status(200).json({
+      id: order.result.id,
     });
-
-    const responseText = await response.text();
-    const parsedResponse = querystring.parse(responseText);
-
-    // Check PayPal response status
-    if (parsedResponse.ACK === "Success") {
-      // Return the token to client
-      res.json({ success: true, token: parsedResponse.TOKEN });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: parsedResponse.L_LONGMESSAGE0 || "Failed to initiate PayPal checkout.",
-      });
-    }
-
-    setTimeout(async () => {
-      const templatePath = path.join(__dirname, "..", "templates", "index.html");
-      const template = fs.readFileSync(templatePath, "utf-8");
-      const emailData = {
-        customerName: req.body.customerName,
-        products: req.body.products,
-        totalAmount: 89.97,
-        zipLinks: req.body.zipLinks,
-      };
-      // Render the template with the data
-      const html = ejs.render(template, emailData);
-      const mailOptions = {
-        from: process.env.SMTP_USER,
-        to: email,
-        subject: "Order Confirmation",
-        html: html,
-      };
-      await sendEmail(mailOptions);
-      console.log("Email sent successfully");
-    }, 2000);
   } catch (error) {
-    console.error("Error in PayPal API call:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(500).json({ error: error.message });
   }
 };
 
-export default paypalCheckout;
+// Capture PayPal Payment
+const capturePayment = async (req, res) => {
+  const { orderID } = req.query;
+  const request = new paypal.orders.OrdersCaptureRequest(orderID);
+
+  try {
+    const capture = await client.execute(request);
+    res.status(200).json({
+      status: capture.result.status,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const sendOrderConfirmationEmail = async (req, res) => {
+  try {
+    const templatePath = path.join(__dirname, "..", "templates", "index.html");
+    const template = fs.readFileSync(templatePath, "utf-8");
+    const emailData = {
+      customerName: req.body.customerName,
+      products: req.body.products,
+      totalAmount: 89.97,
+      zipLinks: req.body.zipLinks,
+    };
+    // Render the template with the data
+    const html = ejs.render(template, emailData);
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to: req.body.email,
+      subject: "Order Confirmation",
+      html: html,
+    };
+    await sendEmail(mailOptions);
+    res.status(200).json({ message: "Email sent" });
+  } catch (error) {
+    req.status(500).json({ error: error.message });
+  }
+};
+
+export { createOrder, capturePayment, sendOrderConfirmationEmail };

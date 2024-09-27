@@ -30,7 +30,7 @@ app.options("*", cors());
 
 app.use("/public", express.static("/root/rg-designs/public"));
 
-app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
+// app.use("/api/payment/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
