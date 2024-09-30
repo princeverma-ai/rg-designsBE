@@ -74,10 +74,7 @@ export const protect = catchAsync(async (req, res, next) => {
   }
   // Check if the user is logged in
   let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
   } else if (req.cookies.token) {
     token = req.cookies.token;
@@ -106,9 +103,7 @@ export const protect = catchAsync(async (req, res, next) => {
     (user && user.changedPasswordAfter(decodedToken.iat)) ||
     (subadmin && subadmin.changedPasswordAfter(decodedToken.iat))
   ) {
-    return next(
-      new AppError("Subadmin or user recently changed password", 401)
-    );
+    return next(new AppError("Subadmin or user recently changed password", 401));
   }
 
   // Attach the subadmin object to the request
@@ -174,7 +169,8 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   // Send the reset token to the user's email
   const message = `Forgot your password? Open this link to reset your password: ${resetURL}.`;
   await sendEmail({
-    to: user.email,
+    from: process.env.SMTP_USER,
+    to: req.body.email,
     subject: "Password Reset Token",
     text: message,
   });
@@ -189,10 +185,7 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   const { password } = req.body;
 
   // Hash the reset token
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
+  const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
   // Find the user by reset token
   const user = await User.findOne({
@@ -293,11 +286,7 @@ export const deleteUser = catchAsync(async (req, res, next) => {
   const userId = req.params.id;
 
   // Find the user by id and delete it
-  const user = await User.findByIdAndUpdate(
-    userId,
-    { isDeleted: true },
-    { new: true }
-  );
+  const user = await User.findByIdAndUpdate(userId, { isDeleted: true }, { new: true });
 
   // Check if the user exists
   if (!user) {
@@ -313,11 +302,7 @@ export const addToCart = catchAsync(async (req, res, next) => {
   const { product } = req.body;
 
   // Find the user by id
-  const user = await User.findByIdAndUpdate(
-    userId,
-    { $addToSet: { cart: product } },
-    { new: true }
-  );
+  const user = await User.findByIdAndUpdate(userId, { $addToSet: { cart: product } }, { new: true });
 
   await Product.findByIdAndUpdate(product, {
     $inc: { cartCount: 1 },
@@ -335,11 +320,7 @@ export const removeFromCart = catchAsync(async (req, res, next) => {
   const { product } = req.body;
 
   // Find the user by id
-  const user = await User.findByIdAndUpdate(
-    userId,
-    { $pull: { cart: product } },
-    { new: true }
-  );
+  const user = await User.findByIdAndUpdate(userId, { $pull: { cart: product } }, { new: true });
 
   if (!user) {
     return next(new AppError("User not found", 404));
@@ -353,11 +334,7 @@ export const addToWishlist = catchAsync(async (req, res, next) => {
   const { product } = req.body;
 
   // Find the user by id
-  const user = await User.findByIdAndUpdate(
-    userId,
-    { $addToSet: { wishlist: product } },
-    { new: true }
-  );
+  const user = await User.findByIdAndUpdate(userId, { $addToSet: { wishlist: product } }, { new: true });
 
   if (!user) {
     return next(new AppError("User not found", 404));
@@ -375,11 +352,7 @@ export const removeFromWishlist = catchAsync(async (req, res, next) => {
   const { product } = req.body;
 
   // Find the user by id
-  const user = await User.findByIdAndUpdate(
-    userId,
-    { $pull: { wishlist: product } },
-    { new: true }
-  );
+  const user = await User.findByIdAndUpdate(userId, { $pull: { wishlist: product } }, { new: true });
 
   if (!user) {
     return next(new AppError("User not found", 404));
