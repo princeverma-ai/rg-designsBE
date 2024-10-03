@@ -21,6 +21,7 @@ const checkout = async (req, res) => {
       paypalId: req.body.paypalId,
       customOrder: req.body.customOrder || null,
       isPaid: req.body.isPaid,
+      date: req.body.date,
     });
     if (req.body.customOrder && req.body.isPaid) {
       await CustomOrder.findByIdAndUpdate(req.body.customOrder, { isPaid: true });

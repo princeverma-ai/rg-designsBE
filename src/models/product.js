@@ -59,11 +59,11 @@ const productSchema = new mongoose.Schema({
     default: null,
   },
   stitchCount: {
-    type: Number,
+    type: String,
     default: null,
   },
   colors: {
-    type: Number,
+    type: String,
     default: null,
   },
   formats: {

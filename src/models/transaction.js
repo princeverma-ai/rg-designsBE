@@ -22,11 +22,11 @@ const transactionSchema = new mongoose.Schema({
     required: true,
   },
 
+  // Optional fields
   date: {
     type: Date,
-    default: new Date(),
+    default: null,
   },
-  // Optional fields
   customOrder: {
     type: Schema.Types.ObjectId,
     ref: "CustomOrder",
