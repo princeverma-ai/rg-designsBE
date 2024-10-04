@@ -5,10 +5,7 @@ import APIFeatures from "../utils/ApiFeatures.js";
 
 // Function to get all products
 export const getAllProducts = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Product.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields();
+  const features = new APIFeatures(Product.find(), req.query).filter().sort().limitFields();
 
   const products = await features.query;
 
@@ -109,6 +106,66 @@ export const deleteProduct = catchAsync(async (req, res, next) => {
 
   // Return the deleted product
   res.status(204).json({ product });
+});
+
+export const bulkUpdate = catchAsync(async (req, res, next) => {
+  const { ids } = req.body;
+
+  if (!ids) {
+    return next(new AppError("Please provide ids", 400));
+  }
+
+  // Fetch the products by ids
+  const products = await Product.find({ _id: { $in: ids } });
+
+  // Prepare an array of update operations
+  const bulkOperations = products.map((product) => {
+    const newOriginalPrice = product.price; // Assuming you're setting originalPrice to the current price
+
+    return {
+      updateOne: {
+        filter: { _id: product._id },
+        update: {
+          $set: {
+            ...req.body, // Keep the existing fields from the request body
+            originalPrice: newOriginalPrice, // Set the originalPrice to the product's current price
+          },
+        },
+      },
+    };
+  });
+
+  // Perform bulkWrite to update all products in one go
+  await Product.bulkWrite(bulkOperations);
+
+  res.status(200).json({ message: "Products updated successfully" });
+});
+
+export const bulkUpdateAll = catchAsync(async (req, res, next) => {
+  // Fetch all products
+  const products = await Product.find({});
+
+  // Prepare an array of update operations
+  const bulkOperations = products.map((product) => {
+    const newOriginalPrice = product.price; // Assuming you're setting originalPrice to the current price
+
+    return {
+      updateOne: {
+        filter: { _id: product._id },
+        update: {
+          $set: {
+            ...req.body, // Keep the existing fields from the request body
+            originalPrice: newOriginalPrice, // Set the originalPrice to the product's current price
+          },
+        },
+      },
+    };
+  });
+
+  // Perform bulkWrite to update all products in one go
+  await Product.bulkWrite(bulkOperations);
+
+  res.status(200).json({ message: "All products updated successfully" });
 });
 
 // Controller function for product search by name

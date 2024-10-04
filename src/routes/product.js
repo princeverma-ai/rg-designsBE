@@ -7,6 +7,8 @@ import {
   deleteProduct,
   searchProduct,
   getProductBySlug,
+  bulkUpdate,
+  bulkUpdateAll,
 } from "./../controllers/product.js";
 import { uploadImageAndZipOptional } from "../utils/multerConfig.js";
 import { protect, restrictTo } from "./../controllers/user.js";
@@ -25,6 +27,9 @@ productRouter.route("/search").get(searchProduct);
 
 // Slug routes
 productRouter.route("/slug/:slug").get(getProductBySlug);
+
+productRouter.route("/bulkUpdate").patch(protect, restrictTo("admin"), bulkUpdate);
+productRouter.route("/bulkUpdateAll").patch(protect, restrictTo("admin"), bulkUpdateAll);
 
 productRouter
   .route("/:id")

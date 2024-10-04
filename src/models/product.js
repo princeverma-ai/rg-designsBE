@@ -22,6 +22,14 @@ const productSchema = new mongoose.Schema({
   },
 
   // Optional fields
+  originalPrice: {
+    type: Number,
+    default: null,
+  },
+  priceValidityDate: {
+    type: Date,
+    default: null,
+  },
   image: {
     type: String,
     default: null,
