@@ -51,10 +51,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  tags: {
-    type: String,
-    default: null,
-  },
+
   metaHeading: {
     type: String,
     trim: true,

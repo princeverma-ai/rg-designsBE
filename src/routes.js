@@ -11,6 +11,7 @@ import customOrder from "./routes/customOrder.js";
 import customReviewRouter from "./routes/customReview.js";
 import subadminRouter from "./routes/subadmin.js";
 import customBannerRouter from "./routes/customBanner.js";
+import tagRouter from "./routes/tag.js";
 
 // CMS imports
 import freebieBannerRouter from "./routes/freebieBanner.js";
@@ -39,6 +40,8 @@ router.use("/customReview", customReviewRouter);
 router.use("/subadmin", subadminRouter);
 
 router.use("/customBanner", customBannerRouter);
+
+router.use("/tag", tagRouter);
 
 // CMS routes
 router.use("/heroPage", heroPageRouter);
