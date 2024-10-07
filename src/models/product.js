@@ -22,6 +22,15 @@ const productSchema = new mongoose.Schema({
   },
 
   // Optional fields
+  priceUpdateType: {
+    type: String,
+    enum: ["escalation", "reduction", "nothing"],
+    default: "nothing",
+  },
+  pricePercentage: {
+    type: Number,
+    default: 0,
+  },
   tags: {
     type: [String],
     default: [],
