@@ -19,6 +19,7 @@ const checkout = async (req, res) => {
       user: req.body.userId,
       amount: req.body.totalAmount,
       paypalId: req.body.paypalId,
+      hdfcOrderId: req.body.hdfcOrderId,
       customOrder: req.body.customOrder || null,
       isPaid: req.body.isPaid,
       date: req.body.date,

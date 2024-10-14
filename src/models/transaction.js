@@ -36,6 +36,10 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  hdfcOrderId: {
+    type: String,
+    default: null,
+  },
   couponDiscount: {
     type: Number,
     default: null,
