@@ -134,7 +134,7 @@ export const handleJuspayResponse = async (req, res) => {
     }
 
     // removes http field from response, typically you won't send entire structure as response
-    return res.send(makeJuspayResponse(statusResponse));
+    res.redirect(`https://www.rgembroiderydesigns.com/order-success`);
   } catch (error) {
     if (error instanceof APIError) {
       // handle errors comming from juspay's api,
