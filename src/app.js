@@ -2,6 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import mongoSanitize from "express-mongo-sanitize";
 import cors from "cors";
+import morgan from "morgan";
 import router from "./routes.js";
 
 // Import AppError && errorHandler
@@ -27,6 +28,8 @@ app.use(
   })
 );
 app.options("*", cors());
+
+app.use(morgan("dev"));
 
 app.use("/public", express.static("/root/rg-designsBE/public"));
 
