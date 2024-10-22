@@ -1,9 +1,10 @@
 import { fileURLToPath } from "url";
 import path from "path";
 import fs from "fs";
+import ejs from "ejs";
 import Transaction from "../models/transaction.js";
 import CustomOrder from "../models/customOrder.js";
-
+import sendEmail from "../utils/email.js";
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -81,6 +82,9 @@ export const initiateJuspayPayment = async (req, res) => {
       customOrder: req.body.customOrder || null,
       isPaid: req.body.isPaid,
       date: req.body.date,
+      customerName: req.body.customerName,
+      customerEmail: req.body.email,
+      zipLinks: req.body.zipLinks,
     });
     if (req.body.customOrder && req.body.isPaid) {
       await CustomOrder.findByIdAndUpdate(req.body.customOrder, { isPaid: true });
@@ -116,6 +120,23 @@ export const handleJuspayResponse = async (req, res) => {
         if (transaction.customOrder) {
           await CustomOrder.findByIdAndUpdate(transaction.customOrder, { isPaid: true });
         }
+        const templatePath = path.join(__dirname, "..", "templates", "index.html");
+        const template = fs.readFileSync(templatePath, "utf-8");
+        const emailData = {
+          customerName: transaction.customerName,
+          products: transaction.lineItems,
+          totalAmount: transaction.amount,
+          zipLinks: transaction.zipLinks,
+        };
+        // Render the template with the data
+        const html = ejs.render(template, emailData);
+        const mailOptions = {
+          from: process.env.SMTP_USER,
+          to: transaction.email,
+          subject: "Order Summary",
+          html: html,
+        };
+        await sendEmail(mailOptions);
         message = "order payment done successfully";
         break;
       case "PENDING":

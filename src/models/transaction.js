@@ -23,6 +23,18 @@ const transactionSchema = new mongoose.Schema({
   },
 
   // Optional fields
+  customerName: {
+    type: String,
+    default: null,
+  },
+  customerEmail: {
+    type: String,
+    default: null,
+  },
+  zipLinks: {
+    type: [String],
+    default: null,
+  },
   date: {
     type: Date,
     default: null,

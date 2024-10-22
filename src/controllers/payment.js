@@ -23,6 +23,9 @@ const checkout = async (req, res) => {
       customOrder: req.body.customOrder || null,
       isPaid: req.body.isPaid,
       date: req.body.date,
+      customerName: req.body.customerName,
+      customerEmail: req.body.email,
+      zipLinks: req.body.zipLinks,
     });
     if (req.body.customOrder && req.body.isPaid) {
       await CustomOrder.findByIdAndUpdate(req.body.customOrder, { isPaid: true });
