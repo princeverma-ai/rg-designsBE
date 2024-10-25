@@ -22,6 +22,18 @@ const productSchema = new mongoose.Schema({
   },
 
   // Optional fields
+  productTags: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProductTag",
+      },
+    ],
+  },
+  keywords: {
+    type: [String],
+    default: [],
+  },
   priceUpdateType: {
     type: String,
     enum: ["escalation", "reduction", "nothing"],
