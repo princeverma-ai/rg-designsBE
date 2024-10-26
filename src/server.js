@@ -16,7 +16,7 @@ import app from "./app.js";
 const server = http.createServer(app);
 const io = new Socket.Server(server);
 // Watch the log file and emit updates via WebSocket
-const MAX_LOG_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const MAX_LOG_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 fs.watchFile(app.logFilePath, { interval: 1000 }, () => {
   fs.readFile(app.logFilePath, "utf8", (err, data) => {
     if (err) return console.error("Error reading log file:", err);
