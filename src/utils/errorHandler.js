@@ -46,7 +46,6 @@ function formatErrorLog(err, req) {
       `Status Code: ${err.statusCode || 500}`,
       `Stack: ${err.stack}`,
       `Request: ${req.method} ${req.originalUrl}`,
-      `IP: ${req.ip}`,
     ].join("\n") + "\n"
   );
 }

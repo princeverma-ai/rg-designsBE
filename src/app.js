@@ -51,7 +51,6 @@ app.use(
         tokens.url(req, res),
         tokens.status(req, res),
         `- ${tokens["response-time"](req, res)} ms`,
-        `- IP: ${tokens["remote-addr"](req, res)}`,
       ].join(" ");
     },
     { stream: logStream }
