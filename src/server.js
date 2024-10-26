@@ -16,10 +16,21 @@ import app from "./app.js";
 const server = http.createServer(app);
 const io = new Socket.Server(server);
 // Watch the log file and emit updates via WebSocket
+const MAX_LOG_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 fs.watchFile(app.logFilePath, { interval: 1000 }, () => {
   fs.readFile(app.logFilePath, "utf8", (err, data) => {
     if (err) return console.error("Error reading log file:", err);
-    io.emit("log-update", data); // Broadcast log updates to clients
+    fs.stat(app.logFilePath, (err, stats) => {
+      if (err) return console.error("Error checking log file size:", err);
+
+      if (stats.size > MAX_LOG_FILE_SIZE) {
+        fs.writeFile(app.logFilePath, "", (err) => {
+          if (err) console.error("Error clearing log file:", err);
+          else console.log("Log file cleared due to size limit.");
+        });
+      }
+    });
+    io.emit("log-update", data);
   });
 });
 
