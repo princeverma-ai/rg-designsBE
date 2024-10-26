@@ -3,6 +3,9 @@ import cookieParser from "cookie-parser";
 import mongoSanitize from "express-mongo-sanitize";
 import cors from "cors";
 import morgan from "morgan";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import router from "./routes.js";
 
 // Import AppError && errorHandler
@@ -29,8 +32,31 @@ app.use(
 );
 app.options("*", cors());
 
-app.use(morgan("dev"));
-
+// Setup log files
+// Get the directory name of the current module file
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const logFilePath = path.join(__dirname, "../logs", "app.log");
+if (!fs.existsSync(logFilePath)) {
+  fs.writeFileSync(logFilePath, "");
+}
+app.logFilePath = logFilePath;
+const logStream = fs.createWriteStream(logFilePath, { flags: "a" });
+app.use(
+  morgan(
+    (tokens, req, res) => {
+      return [
+        `[${new Date().toISOString()}]`,
+        tokens.method(req, res),
+        tokens.url(req, res),
+        tokens.status(req, res),
+        `- ${tokens["response-time"](req, res)} ms`,
+        `- IP: ${tokens["remote-addr"](req, res)}`,
+      ].join(" ");
+    },
+    { stream: logStream }
+  )
+);
 app.use("/public", express.static("/root/rg-designsBE/public"));
 
 app.use(express.json());

@@ -13,6 +13,7 @@ import subadminRouter from "./routes/subadmin.js";
 import customBannerRouter from "./routes/customBanner.js";
 import tagRouter from "./routes/tag.js";
 import productTagRouter from "./routes/productTag.js";
+import logsRouter from "./routes/logs.js";
 
 // CMS imports
 import freebieBannerRouter from "./routes/freebieBanner.js";
@@ -45,6 +46,8 @@ router.use("/customBanner", customBannerRouter);
 router.use("/tag", tagRouter);
 
 router.use("/productTag", productTagRouter);
+
+router.use("/logs", logsRouter);
 
 // CMS routes
 router.use("/heroPage", heroPageRouter);
